@@ -1,50 +1,16 @@
-from collections import defaultdict
 from typing import List
+import networkx as nx
 
 
-def parse(input: List[str]):
-    forwards = defaultdict(list)
-    backwards = defaultdict(list)
+def build_graph(input: List[str]):
+    graph = nx.DiGraph()
     for line in input:
-        start = line[5]
-        end = line[36]
-        forwards[start].append(end)
-        backwards[end].append(start)
-    for v in forwards.values():
-        v.sort()
-    for v in backwards.values():
-        v.sort()
-
-    return forwards, backwards
-
-
-def find_ends(forwards, backwards):
-    starts = set(forwards.keys())
-    ends = set(backwards.keys())
-    front = starts - ends
-    back = ends - starts
-    # assert len(front) == 1
-    assert len(back) == 1
-    return sorted(list(front)), back.pop()
+        graph.add_edge(line[5], line[36])
+    return graph
 
 
 def p1(input: List[str]):
-    forwards, backwards = parse(input)
-    front, back = find_ends(forwards, backwards)
-    current = front[0]
-    res = current
-    attempts = front[1:]
-    while current != back:
-        for node in forwards[current]:
-            if node not in attempts:
-                attempts.append(node)
-        attempts.sort()
-        # if all(prev in res for prev in backwards[current]):
-        current = next(node for node in attempts if all(
-            prev in res for prev in backwards[node]))
-        attempts.remove(current)
-        res += current
-    return res
+    return "".join(nx.lexicographical_topological_sort(build_graph(input)))
 
 
 sample = ["Step C must be finished before step A can begin.",
@@ -59,3 +25,29 @@ assert p1(sample) == "CABDFE"
 lines = open("d07.txt", 'r').readlines()
 assert p1(lines) == "GJFMDHNBCIVTUWEQYALSPXZORK"
 
+
+def p2(input: List[str], workers: int, interval: int):
+    graph = build_graph(input)
+    task_times = []
+    tasks = []
+    time = 0
+    while task_times or graph:
+        available_tasks = [
+            node for node in graph if node not in tasks and graph.in_degree(node) == 0]
+        if available_tasks and len(task_times) < workers:
+            task = min(available_tasks)
+            task_times.append(ord(task) - ord('A')+interval)
+            tasks.append(task)
+        else:
+            min_time = min(task_times)
+            completed = [tasks[i]
+                         for i, v in enumerate(task_times) if v == min_time]
+            task_times = [v - min_time for v in task_times if v > min_time]
+            tasks = [t for t in tasks if t not in completed]
+            time += min_time
+            graph.remove_nodes_from(completed)
+    return time
+
+
+print(p2(sample, 2, 1))
+print(p2(lines, 5, 61))
