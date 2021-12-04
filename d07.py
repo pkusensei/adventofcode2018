@@ -49,5 +49,5 @@ def p2(input: List[str], workers: int, interval: int):
     return time
 
 
-print(p2(sample, 2, 1))
-print(p2(lines, 5, 61))
+assert p2(sample, 2, 1) == 15
+assert p2(lines, 5, 61) == 1050
