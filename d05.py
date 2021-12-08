@@ -32,4 +32,4 @@ def p2(input: str):
 
 
 assert p2(sample) == 4
-print(p2(line))
+assert p2(line) == 4952
