@@ -24,7 +24,7 @@ class Unit:
         self.damage_type = damage_type
         self.damage = damage
         self.side = side
-        self._target = None
+        self.target = None
 
     @property
     def power(self):

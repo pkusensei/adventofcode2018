@@ -10,7 +10,7 @@ def parse(lines: List[str]):
 
 
 def distance(pt1: Tuple[int, int, int], pt2: Tuple[int, int, int]):
-    return abs(pt1[0] - pt2[0]) + abs(pt1[1] - pt2[1]) + abs(pt1[2] - pt2[2])
+    return sum(abs(p1 - p2) for p1, p2 in zip(pt1, pt2))
 
 
 def p1(lines: List[str]):

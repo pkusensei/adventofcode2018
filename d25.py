@@ -77,4 +77,4 @@ test4 = [
 assert solve(test4) == 8
 
 input = open("d25.txt", "r").readlines()
-print(solve(input))
+assert solve(input) == 399
